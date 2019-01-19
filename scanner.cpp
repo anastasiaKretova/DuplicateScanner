@@ -1,6 +1,6 @@
 #include "scanner.h"
 
-const qint64 PRE = 20;
+const qint64 PRE = 40;
 
 bool Scanner::checkStop() {
     return QThread::currentThread()->isInterruptionRequested();
@@ -54,6 +54,11 @@ void Scanner::getDuplicates(QString const &dir) {
             emit finish();
             return;
         }
+        if (curSizeIt.value().size() == 1) {
+            curSize += curSizeIt.key();
+            progress(curSize, size, percent);
+            continue;
+        }
         QMap <QString, QVector<QString>> map2;
         for (auto path : curSizeIt.value()) {
             if (checkStop()) {
@@ -73,6 +78,11 @@ void Scanner::getDuplicates(QString const &dir) {
             if (checkStop()) {
                 emit finish();
                 return;
+            }
+            if (curPrefixIt.value().size() == 1) {
+                curSize += curSizeIt.key();
+                progress(curSize, size, percent);
+                continue;
             }
             QMap <QString, QVector<QString>> map3;
             for (auto path : curPrefixIt.value()) {
